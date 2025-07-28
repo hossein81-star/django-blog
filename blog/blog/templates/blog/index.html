@@ -1,0 +1,124 @@
+
+<!-- main_content.html -->
+{% extends 'parent/base.html' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+
+<!-- Culture Category Section (Simple Version without Images) -->
+<!--<section id="business-category" class="business-category section py-5">-->
+<!--  <div class="container" data-aos="fade-up">-->
+
+<!--    &lt;!&ndash; عنوان بخش &ndash;&gt;-->
+<!--    <div class="d-flex justify-content-between align-items-center mb-4">-->
+<!--      <h2 class="mb-0">Business</h2>-->
+<!--      <a href="categories.html" class="text-decoration-none">See All Business</a>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; ردیف پست‌ها &ndash;&gt;-->
+<!--    <div class="row g-4" data-aos="fade-up" data-aos-delay="100">-->
+
+<!--      &lt;!&ndash; یک کارت پست &ndash;&gt;-->
+<!--      <div class="col-lg-4 col-md-6">-->
+<!--        <div class="card h-100 shadow-sm border-0">-->
+<!--          <img src="assets/img/post-landscape-3.jpg" class="card-img-top" alt="...">-->
+<!--          <div class="card-body d-flex flex-column justify-content-between">-->
+<!--            <div>-->
+<!--              <div class="text-muted small mb-2">-->
+<!--                <span class="badge bg-primary">Business</span> • Jul 5th '22-->
+<!--              </div>-->
+<!--              <h5 class="card-title">-->
+<!--                <a href="blog-details.html" class="text-dark text-decoration-none">-->
+<!--                  What is the son of Football Coach John Gruden doing now?-->
+<!--                </a>-->
+<!--              </h5>-->
+<!--              <p class="card-text small">-->
+<!--                Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio placeat magni...-->
+<!--              </p>-->
+<!--            </div>-->
+<!--            <div class="d-flex align-items-center mt-3">-->
+<!--              <img src="assets/img/person-4.jpg" alt="Author" class="rounded-circle me-2" width="40" height="40">-->
+<!--              <small class="text-muted">Wade Warren</small>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; کپی کن و پست‌های دیگه اضافه کن &ndash;&gt;-->
+<!--      <div class="col-lg-4 col-md-6">-->
+<!--        <div class="card h-100 shadow-sm border-0">-->
+<!--          <img src="assets/img/post-landscape-5.jpg" class="card-img-top" alt="...">-->
+<!--          <div class="card-body d-flex flex-column justify-content-between">-->
+<!--            <div>-->
+<!--              <div class="text-muted small mb-2">-->
+<!--                <span class="badge bg-primary">Business</span> • Jul 5th '22-->
+<!--              </div>-->
+<!--              <h5 class="card-title">-->
+<!--                <a href="blog-details.html" class="text-dark text-decoration-none">-->
+<!--                  11 Work From Home Part-Time Jobs You Can Do Now-->
+<!--                </a>-->
+<!--              </h5>-->
+<!--              <p class="card-text small">-->
+<!--                Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio placeat magni...-->
+<!--              </p>-->
+<!--            </div>-->
+<!--            <div class="d-flex align-items-center mt-3">-->
+<!--              <img src="assets/img/person-1.jpg" alt="Author" class="rounded-circle me-2" width="40" height="40">-->
+<!--              <small class="text-muted">Jenny Wilson</small>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; همین کارت رو برای همه پست‌ها استفاده کن &ndash;&gt;-->
+<!--      &lt;!&ndash; ادامه... &ndash;&gt;-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
+<section  class="post-category section py-5">
+  <div class="container" data-aos="fade-up">
+
+    <!-- عنوان دسته -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Business</h2>
+      <a href="categories/business.html" class="text-decoration-none">See All Business</a>
+    </div>
+
+    <!-- پست‌های دسته -->
+    <div class="row g-4" data-aos="fade-up" data-aos-delay="100">
+
+      <!-- یک کارت پست -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="assets/img/post-business-1.jpg" class="card-img-top" alt="Business Post">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <div class="text-muted small mb-2">
+                <span class="badge bg-primary">Business</span> • Jul 5th '22
+              </div>
+              <h5 class="card-title">
+                <a href="blog-details.html" class="text-dark text-decoration-none">
+                  Title of Business Post
+                </a>
+              </h5>
+              <p class="card-text small">
+                Brief description of the business post goes here...
+              </p>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+              <img src="assets/img/person-1.jpg" alt="Author" class="rounded-circle me-2" width="40" height="40">
+              <small class="text-muted">Author Name</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- کارت‌های دیگه همینجا اضافه کن -->
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}

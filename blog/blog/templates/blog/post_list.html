@@ -1,0 +1,63 @@
+
+<!-- main_content.html -->
+{% extends 'parent/base.html' %}
+
+{% block title %}{{category}}{% endblock %}
+
+{% block content %}
+
+<section  class="post-category section py-5">
+  <div class="container" data-aos="fade-up">
+
+    <!-- عنوان دسته -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">{{category}}</h2>
+
+    </div>
+
+    <!-- پست‌های دسته -->
+    <div class="row g-4" data-aos="fade-up" data-aos-delay="100">
+
+      <!-- یک کارت پست -->
+
+      {% for post in posts %}
+        <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="ratio ratio-16x9 rounded overflow-hidden">
+              <img src="{{ post.images.first.image_field.url }}" class="w-100 h-100 object-fit-cover" alt="Business Post">
+          </div>
+
+
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <div class="text-muted small mb-2">
+                <span class="badge bg-primary">{{post.category}}</span> • {{post.create}}
+              </div>
+              <h5 class="card-title">
+                <a href="{{ post.get_absolute_url }}" class="text-dark text-decoration-none">
+                  {{post.title}}
+                </a>
+              </h5>
+              <p class="card-text small">
+                {{post.meta_description}}
+              </p>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+              <img src="assets/img/person-1.jpg" alt="Author" class="rounded-circle me-2" width="40" height="40">
+              <small class="text-muted">{{post.auther}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p>category is null</p>
+      {% endfor %}
+
+      <!-- کارت‌های دیگه همینجا اضافه کن -->
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}
