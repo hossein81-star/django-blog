@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from  django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager
+
 
 
 # Create your models here.
@@ -9,9 +11,10 @@ from django.urls import reverse
 # class PublishedManager(models.Manager):
 #     def get_queryset(self):
 #         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
-class PubishedManeger(models.Manager):
+class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
+
 
 
 
@@ -36,16 +39,16 @@ class Post(models.Model):
     id=models.AutoField(primary_key=True)
     category=models.CharField(choices=CATEGORY_CHOICES,default="cul")
     status=models.CharField(choices=Status,default="DF",max_length=2)
-    auther=models.ForeignKey(User,on_delete=models.CASCADE,related_name="auther")
+    auther=models.ForeignKey(User,on_delete=models.CASCADE,related_name="posts")
     # create=models.DateTimeField(auto_now_add=True)
     # update=models.DateTimeField(auto_now=True)
     # publish=models.DateTimeField(timezone.now)
     publish = models.DateTimeField(default=timezone.now)
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
-
+    tags = TaggableManager()
     #model manager
-    published=PubishedManeger()
+    published=PublishedManager()
     objects=models.Manager()
 
     def get_absolute_url(self):

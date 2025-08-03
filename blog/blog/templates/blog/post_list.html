@@ -11,7 +11,11 @@
 
     <!-- عنوان دسته -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">{{category}}</h2>
+      {% if category %}
+          <h2 class="mb-0">{{category}}</h2>
+      {% else %}
+        <h2 class="mb-0">{{tag}}</h2>
+      {% endif %}
 
     </div>
 
