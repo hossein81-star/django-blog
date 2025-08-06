@@ -1,0 +1,119 @@
+{% extends 'parent/base.html' %}
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+<style>
+  .create-post-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .post-form p {
+    margin-bottom: 15px;
+  }
+
+  input[type="text"],
+  input[type="file"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 16px;
+  }
+
+  .btn-submit {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+
+  .images-gallery {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+  }
+
+  .image-item {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+
+  .image-item img {
+    max-width: 100%;
+    border-radius: 6px;
+    display: block;
+  }
+
+  .delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .delete-btn:hover {
+    background-color: #bd2130;
+  }
+
+  .image-count {
+    margin-top: 15px;
+    font-style: italic;
+    color: #555;
+    text-align: right;
+  }
+</style>
+
+<div class="create-post-container">
+  <form method="post" enctype="multipart/form-data" class="post-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+   {% if not post.images.all %}
+       <p>
+            <label for="id_image">Upload new image:</label>
+            <input type="file" name="image" id="id_image" class="form-control" />
+        </p>
+    {% endif %}
+
+    <input type="submit" value="Send" class="btn-submit" />
+  </form>
+
+  {% if post.images.all %}
+    <div class="images-gallery">
+      {% for img in post.images.all %}
+        <div class="image-item">
+          <img src="{{ img.image_field.url }}" alt="post image" />
+          <a href="{% url 'blog:delete_image' img.id %}" class="delete-btn">Delete</a>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="image-count">Total images: {{ post.images.count }}</p>
+  {% endif %}
+</div>
+{% endblock %}

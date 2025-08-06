@@ -49,7 +49,6 @@
     box-shadow: none;
     border-color: #0d6efd;
   }
-
 </style>
 
 <div class="container my-5">
@@ -82,7 +81,12 @@
             <h5 class="fw-bold mb-2">{{ post.title }}</h5>
             <p class="text-muted">{{ post.meta_description|truncatechars:150 }}</p>
             <div class="text-end">
-              <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
+              <a href="{% url 'blog:delete_post' post.pk %}" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i> Delete
+              </a>
+              <a href="{% url 'blog:edite_post' post.pk %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-pencil-square"></i> Edit
+              </a>
             </div>
           </div>
         {% endfor %}
@@ -94,9 +98,15 @@
     <!-- Settings Section -->
     <div class="tab-pane fade" id="settings" role="tabpanel">
       <div class="d-grid gap-3 mt-3 col-md-6 mx-auto">
-        <a href="#" class="btn btn-primary settings-btn"><i class="bi bi-pencil-square me-2"></i> Add New Post</a>
-        <a href="#" class="btn btn-warning settings-btn"><i class="bi bi-key me-2"></i> Change Password</a>
-        <a href="#" class="btn btn-secondary settings-btn"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+        <a href="{% url 'blog:add_post' %}" class="btn btn-primary settings-btn">
+          <i class="bi bi-pencil-square me-2"></i> Add New Post
+        </a>
+        <a href="#" class="btn btn-warning settings-btn">
+          <i class="bi bi-key me-2"></i> Change Password
+        </a>
+        <a href="#" class="btn btn-secondary settings-btn">
+          <i class="bi bi-box-arrow-right me-2"></i> Logout
+        </a>
       </div>
     </div>
 
@@ -117,7 +127,9 @@
           <input type="date" class="form-control" id="birthday" name="birthday" value="{{ user.birthday|date:'Y-m-d' }}">
         </div>
         <div class="text-end">
-          <button type="submit" class="btn btn-success"><i class="bi bi-check-circle"></i> Save Changes</button>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Save Changes
+          </button>
         </div>
       </form>
     </div>

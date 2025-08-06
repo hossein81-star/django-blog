@@ -1,0 +1,65 @@
+{% extends 'parent/base.html' %}
+{% block title %}Delete Post{% endblock %}
+
+{% block content %}
+<style>
+  .delete-post-container {
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 2.5rem;
+    max-width: 600px;
+    margin: 5rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
+
+  .delete-post-container h2 {
+    font-weight: bold;
+    color: #dc3545;
+    margin-bottom: 1rem;
+  }
+
+  .delete-post-container p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 5px;
+    margin-right: 1rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-delete:hover {
+    background-color: #c82333;
+  }
+
+  .btn-cancel {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 0.6rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-cancel:hover {
+    background-color: #5a6268;
+  }
+</style>
+
+<div class="delete-post-container">
+  <h2><i class="bi bi-trash3-fill me-2"></i>Delete Post</h2>
+  <p>Are you sure you want to delete <strong>{{ post.title }}</strong>?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn-delete"><i class="bi bi-x-circle me-1"></i>Delete</button>
+    <a href="{{ post.get_absolute_url }}" class="btn-cancel"><i class="bi bi-arrow-left me-1"></i>Cancel</a>
+  </form>
+</div>
+{% endblock %}

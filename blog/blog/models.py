@@ -3,7 +3,7 @@ from django.utils import timezone
 from  django.contrib.auth.models import User
 from django.urls import reverse
 from taggit.managers import TaggableManager
-
+from django.template.defaultfilters import slugify
 
 
 # Create your models here.
@@ -25,7 +25,11 @@ class Post(models.Model):
         ("Business", "Business"),
         ("Lifestyle", "Lifestyle"),
         ("Technology", "Technology"),
+
     )
+
+
+
     #status
     class Status(models.TextChoices):
         DRAFT = "DF", "Draft"
@@ -37,7 +41,7 @@ class Post(models.Model):
     content = models.TextField(default="no description")
     slug=models.CharField(max_length=250)
     id=models.AutoField(primary_key=True)
-    category=models.CharField(choices=CATEGORY_CHOICES,default="cul")
+    category=models.CharField(choices= CATEGORY_CHOICES,default="cul")
     status=models.CharField(choices=Status,default="DF",max_length=2)
     auther=models.ForeignKey(User,on_delete=models.CASCADE,related_name="posts")
     # create=models.DateTimeField(auto_now_add=True)
@@ -48,11 +52,25 @@ class Post(models.Model):
     update = models.DateTimeField(auto_now=True)
     tags = TaggableManager()
     #model manager
-    published=PublishedManager()
-    objects=models.Manager()
+    objects = models.Manager()
+    published = PublishedManager()
 
     def get_absolute_url(self):
         return reverse("blog:post_details",args=[self.id])
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+
+    def delete(self, *args, **kwargs):
+        for img in self.images.all():
+            path = img.image_field.path
+            storage = img.image_field.storage
+            storage.delete(path)
+        super().delete(*args, **kwargs)
+
 
     class Meta:
         ordering = ["-publish"]
@@ -67,8 +85,8 @@ class PostImage(models.Model):
     post=models.ForeignKey(Post,on_delete=models.CASCADE,related_name="images")
     image_field=models.ImageField(upload_to="post_image")
     # ResizedImageField(size=[2000, 100], crop=['top', 'left'], upload_to='post_image/')
-
     title = models.CharField(max_length=250,default="image")
+    objects = models.Manager()
 
 
 
