@@ -3,6 +3,8 @@ from .models import *
 from  django.contrib.auth import authenticate,login,logout
 from taggit.models import Tag
 from .forms import *
+from django.db.models import Count
+
 
 # Create your views here.
 
@@ -58,7 +60,10 @@ def post_list(request,category_slug=None,tag_slug=None):
 def post_details(request,pk):
     post = get_object_or_404(Post, id=pk, status=Post.Status.PUBLISHED)
     tags=post.tags.all()
-    return render(request,"blog/post_details.html",{"post":post,"tags":tags})
+    post_tags_ids=post.tags.values_list('id',flat=True)
+    similar_post=Post.published.filter(tags__in=post_tags_ids).exclude(id=pk)
+    similar_post=similar_post.annotate(same_tags=Count('tags')).order_by("-same_tags","create")[:2]
+    return render(request,"blog/post_details.html",{"post":post,"tags":tags,"similar_post":similar_post})
 
 def profile(request):
     user=request.user
