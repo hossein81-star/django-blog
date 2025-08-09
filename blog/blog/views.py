@@ -38,6 +38,7 @@ def index(request):
 
 
 def post_list(request,category_slug=None,tag_slug=None):
+    user=request.user
     posts=Post.published.all()
     category=None
     tag=None
@@ -52,7 +53,8 @@ def post_list(request,category_slug=None,tag_slug=None):
     context = {
         "posts": posts,
         "tag":tag,
-        "category":category
+        "category":category,
+        "user":user
         }
     return render(request, "blog/post_list.html", context)
 
@@ -64,6 +66,26 @@ def post_details(request,pk):
     similar_post=Post.published.filter(tags__in=post_tags_ids).exclude(id=pk)
     similar_post=similar_post.annotate(same_tags=Count('tags')).order_by("-same_tags","create")[:2]
     return render(request,"blog/post_details.html",{"post":post,"tags":tags,"similar_post":similar_post})
+
+def sign_up(request):
+    if request.method == "POST":
+        form=RegisterForm(request.POST,request.FILES)
+        if form.is_valid():
+            user=form.save(commit=False)
+            user.set_password(form.cleaned_data["password2"])
+            user.save()
+            image = form.cleaned_data.get('image')
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password2')
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            if form.cleaned_data["image"]:
+                UserImage.objects.create(image_field=image, user=user)
+            return redirect("blog:profile")
+    else:
+        form=RegisterForm()
+    return render(request,"forms/sign_up.html",{"form":form})
+
 
 def profile(request):
     user=request.user
@@ -82,7 +104,7 @@ def add_post(request):
 
         if form.is_valid():
             new_post=form.save(commit=False)
-            new_post.auther=request.user
+            new_post.author=request.user
             new_post.save()
             form.save_m2m()
             image = form.cleaned_data.get('image')
@@ -113,7 +135,7 @@ def update_post(request, pk):
         form = AddPost(request.POST,request.FILES,instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.auther = request.user
+            post.author = request.user
             post.save()
             form.save_m2m()
             image = form.cleaned_data.get('image')

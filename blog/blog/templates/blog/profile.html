@@ -53,10 +53,10 @@
 
 <div class="container my-5">
   <div class="profile-container text-center mb-5">
-    <img src="https://via.placeholder.com/130" alt="User" class="profile-pic mb-3">
+    <img src="{{ user.image.first.image_field.url }}" alt="User" class="profile-pic mb-3 h-20 w-20">
     <h3 class="fw-bold mb-1">{{ user.username }}</h3>
     <p class="text-muted mb-1">{{ user.bio|default:"No biography provided." }}</p>
-    <p class="text-muted mb-0">Date of birth: {{ user.birthday|default:"N/A" }}</p>
+    <p class="text-muted mb-0">Date of birth: {{ user.date_of_birth|default:"N/A" }}</p>
   </div>
 
   <ul class="nav nav-tabs justify-content-center mb-4" id="profile-tabs" role="tablist">
@@ -101,10 +101,10 @@
         <a href="{% url 'blog:add_post' %}" class="btn btn-primary settings-btn">
           <i class="bi bi-pencil-square me-2"></i> Add New Post
         </a>
-        <a href="#" class="btn btn-warning settings-btn">
+        <a href="{% url 'blog:password-change' %}" class="btn btn-warning settings-btn">
           <i class="bi bi-key me-2"></i> Change Password
         </a>
-        <a href="#" class="btn btn-secondary settings-btn">
+        <a href="{% url 'blog:logout' %}" class="btn btn-secondary settings-btn">
           <i class="bi bi-box-arrow-right me-2"></i> Logout
         </a>
       </div>
@@ -124,7 +124,7 @@
         </div>
         <div class="mb-3">
           <label for="birthday" class="form-label">Date of Birth</label>
-          <input type="date" class="form-control" id="birthday" name="birthday" value="{{ user.birthday|date:'Y-m-d' }}">
+          <input type="date" class="form-control" id="birthday" name="birthday" value="{{ user.date_of_birth|date:'Y-m-d' }}">
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-success">

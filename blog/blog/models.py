@@ -1,16 +1,28 @@
 from django.db import models
 from django.utils import timezone
-from  django.contrib.auth.models import User
+
 from django.urls import reverse
 from taggit.managers import TaggableManager
 from django.template.defaultfilters import slugify
-
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 # Create your models here.
-#Manager
-# class PublishedManager(models.Manager):
-#     def get_queryset(self):
-#         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
+
+class User(AbstractUser):
+
+    date_of_birth = models.DateField(verbose_name="birth_day", blank=True, null=True)
+    bio = models.TextField(verbose_name="bio", null=True, blank=True)
+    photo = models.ImageField(verbose_name="image", upload_to="account_images/", blank=True, null=True)
+    job = models.CharField(max_length=250, verbose_name="job", null=True, blank=True)
+    phone = models.CharField(max_length=11, null=True, blank=True)
+
+
+class UserImage(models.Model):
+   user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="image")
+   image_field = models.ImageField(upload_to="user_image")
+   objects = models.Manager()
+
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status=Post.Status.PUBLISHED)
@@ -43,7 +55,7 @@ class Post(models.Model):
     id=models.AutoField(primary_key=True)
     category=models.CharField(choices= CATEGORY_CHOICES,default="cul")
     status=models.CharField(choices=Status,default="DF",max_length=2)
-    auther=models.ForeignKey(User,on_delete=models.CASCADE,related_name="posts")
+    author=models.ForeignKey( settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="posts")
     # create=models.DateTimeField(auto_now_add=True)
     # update=models.DateTimeField(auto_now=True)
     # publish=models.DateTimeField(timezone.now)
