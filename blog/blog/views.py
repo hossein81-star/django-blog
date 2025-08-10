@@ -4,7 +4,9 @@ from  django.contrib.auth import authenticate,login,logout
 from taggit.models import Tag
 from .forms import *
 from django.db.models import Count
-
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 
@@ -159,3 +161,28 @@ def delete_image(request, pk):
     image = get_object_or_404(PostImage, id=pk)
     image.delete()
     return redirect("blog:add_post")
+
+@login_required
+@require_POST
+def post_like(request):
+    post_id=request.POST.get("post_id")
+    if post_id is not None:
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+        liked = None
+        if user in post.likes.all():
+
+            liked=False
+            post.likes.remove(user)
+        else:
+            liked=True
+            post.likes.add(user)
+
+        liked_count=post.likes.count()
+        response_data={
+            "liked":liked,
+            "liked_count":liked_count
+        }
+    else:
+        response_data={"error":"post not found"}
+    return JsonResponse(response_data)

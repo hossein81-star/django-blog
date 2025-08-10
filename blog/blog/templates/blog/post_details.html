@@ -1,20 +1,64 @@
-<!-- main_content.html -->
 {% extends 'parent/base.html' %}
 
-{% block title %}single post{% endblock %}
+{% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
+<style>
+/* دکمه لایک */
+.btn-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #444;
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.btn-like:hover {
+    color: #e74c3c;
+}
+
+.heart-icon {
+    stroke: #444;
+    transition: stroke 0.3s ease, fill 0.3s ease;
+}
+
+.btn-like.liked .heart-icon {
+    fill: #e74c3c;
+    stroke: #e74c3c;
+    animation: heartbeat 0.6s ease;
+}
+
+.likes-count {
+    font-size: 1rem;
+    min-width: 24px;
+    text-align: center;
+    color: inherit;
+}
+
+/* انیمیشن ضربان قلب */
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    40% { transform: scale(1); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+</style>
 
 <main class="main">
-
     <!-- Page Title -->
     <div class="page-title">
         <div class="container d-lg-flex justify-content-between align-items-center">
-            <h1 class="mb-2 mb-lg-0">{{post.title}}</h1>
+            <h1 class="mb-2 mb-lg-0">{{ post.title }}</h1>
             <nav class="breadcrumbs">
                 <ol>
-                    <li><a href="index.html">Home</a></li>
-                    <li class="current">{{post.title}}</li>
+                    <li><a href="#">Home</a></li>
+                    <li class="current">{{ post.title }}</li>
                 </ol>
             </nav>
         </div>
@@ -22,46 +66,51 @@
 
     <div class="container">
         <div class="row">
-
             <div class="col-lg-8">
-
                 <!-- Blog Details Section -->
                 <section id="blog-details" class="blog-details section">
                     <div class="container">
-
                         <article class="article">
-
                             <div class="post-img">
                                 <img src="assets/img/blog/blog-1.jpg" alt="" class="img-fluid">
                             </div>
 
-                            <h2 class="title">{{post.title}}</h2>
+                            <h2 class="title">{{ post.title }}</h2>
 
-                            <div class="meta-top">
-                                <ul>
-                                    <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a
-                                            href="blog-details.html">{{post.author}}</a></li>
-                                    <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a
-                                            href="blog-details.html">
-                                        <time datetime="2020-01-01">{{post.create}}</time>
-                                    </a></li>
-                                    <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a
-                                            href="blog-details.html">12 Comments</a></li>
+                            <div class="meta-top d-flex align-items-center justify-content-between" data-post_id="{{ post.id }}">
+                                <ul class="d-flex align-items-center mb-0">
+                                    <li class="d-flex align-items-center me-3"><i class="bi bi-person me-1"></i>
+                                        <a href="#">{{ post.author }}</a>
+                                    </li>
+                                    <li class="d-flex align-items-center me-3"><i class="bi bi-clock me-1"></i>
+                                        <time datetime="{{ post.create|date:'Y-m-d' }}">{{ post.create|date:"F j, Y" }}</time>
+                                    </li>
+                                    <li class="d-flex align-items-center"><i class="bi bi-chat-dots me-1"></i>
+                                        <a href="#comments">12 Comments</a>
+                                    </li>
                                 </ul>
+
+                                <!-- Like Button -->
+                                <button class="btn-like like-button {% if user in post.likes.all %}liked{% endif %}" aria-label="Like Post" title="Like this post">
+                                    <svg class="heart-icon" viewBox="0 0 24 24" width="24" height="24" fill="{% if user in post.likes.all %}#e74c3c{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 21C12 21 5 14.75 5 9.5C5 7.01472 7.01472 5 9.5 5C10.948 5 12 6 12 6C12 6 13.052 5 14.5 5C16.9853 5 19 7.01472 19 9.5C19 14.75 12 21 12 21Z"/>
+                                    </svg>
+                                    <span class="likes-count">{{ post.likes.count }}</span>
+                                </button>
                             </div><!-- End meta top -->
 
                             <div class="content">
-                                <img src="{{ post.images.first.image_field.url }}" class="img-fluid w-100 rounded">
-                                <p>{{post.content}}</p>
+                                {% if post.images.first %}
+                                    <img src="{{ post.images.first.image_field.url }}" class="img-fluid w-100 rounded" alt="Post image">
+                                {% endif %}
+                                <p>{{ post.content|linebreaks }}</p>
                             </div>
-
 
                             <div class="meta-bottom">
                                 <i class="bi bi-folder"></i>
                                 <ul class="cats">
                                     <li><a href="#">Business</a></li>
                                 </ul>
-
                                 <i class="bi bi-tags"></i>
                                 <ul class="tags">
                                     <li><a href="#">Creative</a></li>
@@ -69,258 +118,149 @@
                                     <li><a href="#">Marketing</a></li>
                                 </ul>
                             </div><!-- End meta bottom -->
-
                         </article>
-
                     </div>
                 </section><!-- /Blog Details Section -->
 
                 <!-- Blog Comments Section -->
-                <section id="blog-comments" class="blog-comments section">
-
+                <section id="comments" class="blog-comments section">
                     <div class="container">
-
                         <h4 class="comments-count">8 Comments</h4>
-
-                        <div id="comment-1" class="comment">
-                            <div class="d-flex">
-                                <div class="comment-img"><img src="assets/img/blog/comments-1.jpg" alt=""></div>
-                                <div>
-                                    <h5><a href="">Georgia Reader</a> <a href="#" class="reply"><i
-                                            class="bi bi-reply-fill"></i> Reply</a></h5>
-                                    <time datetime="2020-01-01">01 Jan,2022</time>
-                                    <p>
-                                        Et rerum totam nisi. Molestiae vel quam dolorum vel voluptatem et et. Est ad aut
-                                        sapiente quis molestiae est qui cum soluta.
-                                        Vero aut rerum vel. Rerum quos laboriosam placeat ex qui. Sint qui facilis et.
-                                    </p>
-                                </div>
-                            </div>
-                        </div><!-- End comment #1 -->
-
-                        <div id="comment-2" class="comment">
-                            <div class="d-flex">
-                                <div class="comment-img"><img src="assets/img/blog/comments-2.jpg" alt=""></div>
-                                <div>
-                                    <h5><a href="">Aron Alvarado</a> <a href="#" class="reply"><i
-                                            class="bi bi-reply-fill"></i> Reply</a></h5>
-                                    <time datetime="2020-01-01">01 Jan,2022</time>
-                                    <p>
-                                        Ipsam tempora sequi voluptatem quis sapiente non. Autem itaque eveniet saepe.
-                                        Officiis illo ut beatae.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div id="comment-reply-1" class="comment comment-reply">
-                                <div class="d-flex">
-                                    <div class="comment-img"><img src="assets/img/blog/comments-3.jpg" alt=""></div>
-                                    <div>
-                                        <h5><a href="">Lynda Small</a> <a href="#" class="reply"><i
-                                                class="bi bi-reply-fill"></i> Reply</a></h5>
-                                        <time datetime="2020-01-01">01 Jan,2022</time>
-                                        <p>
-                                            Enim ipsa eum fugiat fuga repellat. Commodi quo quo dicta. Est ullam
-                                            aspernatur ut vitae quia mollitia id non. Qui ad quas nostrum rerum sed
-                                            necessitatibus aut est. Eum officiis sed repellat maxime vero nisi natus.
-                                            Amet nesciunt nesciunt qui illum omnis est et dolor recusandae.
-
-                                            Recusandae sit ad aut impedit et. Ipsa labore dolor impedit et natus in
-                                            porro aut. Magnam qui cum. Illo similique occaecati nihil modi eligendi.
-                                            Pariatur distinctio labore omnis incidunt et illum. Expedita et dignissimos
-                                            distinctio laborum minima fugiat.
-
-                                            Libero corporis qui. Nam illo odio beatae enim ducimus. Harum reiciendis
-                                            error dolorum non autem quisquam vero rerum neque.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div id="comment-reply-2" class="comment comment-reply">
-                                    <div class="d-flex">
-                                        <div class="comment-img"><img src="assets/img/blog/comments-4.jpg" alt=""></div>
-                                        <div>
-                                            <h5><a href="">Sianna Ramsay</a> <a href="#" class="reply"><i
-                                                    class="bi bi-reply-fill"></i> Reply</a></h5>
-                                            <time datetime="2020-01-01">01 Jan,2022</time>
-                                            <p>
-                                                Et dignissimos impedit nulla et quo distinctio ex nemo. Omnis quia
-                                                dolores cupiditate et. Ut unde qui eligendi sapiente omnis ullam.
-                                                Placeat porro est commodi est officiis voluptas repellat quisquam
-                                                possimus. Perferendis id consectetur necessitatibus.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                </div><!-- End comment reply #2-->
-
-                            </div><!-- End comment reply #1-->
-
-                        </div><!-- End comment #2-->
-
-                        <div id="comment-3" class="comment">
-                            <div class="d-flex">
-                                <div class="comment-img"><img src="assets/img/blog/comments-5.jpg" alt=""></div>
-                                <div>
-                                    <h5><a href="">Nolan Davidson</a> <a href="#" class="reply"><i
-                                            class="bi bi-reply-fill"></i> Reply</a></h5>
-                                    <time datetime="2020-01-01">01 Jan,2022</time>
-                                    <p>
-                                        Distinctio nesciunt rerum reprehenderit sed. Iste omnis eius repellendus quia
-                                        nihil ut accusantium tempore. Nesciunt expedita id dolor exercitationem
-                                        aspernatur aut quam ut. Voluptatem est accusamus iste at.
-                                        Non aut et et esse qui sit modi neque. Exercitationem et eos aspernatur. Ea est
-                                        consequuntur officia beatae ea aut eos soluta. Non qui dolorum voluptatibus et
-                                        optio veniam. Quam officia sit nostrum dolorem.
-                                    </p>
-                                </div>
-                            </div>
-
-                        </div><!-- End comment #3 -->
-
-                        <div id="comment-4" class="comment">
-                            <div class="d-flex">
-                                <div class="comment-img"><img src="assets/img/blog/comments-6.jpg" alt=""></div>
-                                <div>
-                                    <h5><a href="">Kay Duggan</a> <a href="#" class="reply"><i
-                                            class="bi bi-reply-fill"></i> Reply</a></h5>
-                                    <time datetime="2020-01-01">01 Jan,2022</time>
-                                    <p>
-                                        Dolorem atque aut. Omnis doloremque blanditiis quia eum porro quis ut velit
-                                        tempore. Cumque sed quia ut maxime. Est ad aut cum. Ut exercitationem non in
-                                        fugiat.
-                                    </p>
-                                </div>
-                            </div>
-
-                        </div><!-- End comment #4 -->
-
+                        <!-- کامنت‌ها اینجا بیاید -->
                     </div>
-
                 </section><!-- /Blog Comments Section -->
 
                 <!-- Comment Form Section -->
                 <section id="comment-form" class="comment-form section">
                     <div class="container">
-
-                        <form action="">
-
+                        <form action="" method="post">
+                            {% csrf_token %}
                             <h4>Post Comment</h4>
                             <p>Your email address will not be published. Required fields are marked * </p>
                             <div class="row">
                                 <div class="col-md-6 form-group">
-                                    <input name="name" type="text" class="form-control" placeholder="Your Name*">
+                                    <input name="name" type="text" class="form-control" placeholder="Your Name*" required>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <input name="email" type="text" class="form-control" placeholder="Your Email*">
+                                    <input name="email" type="email" class="form-control" placeholder="Your Email*" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col form-group">
-                                    <input name="website" type="text" class="form-control" placeholder="Your Website">
+                                    <input name="website" type="url" class="form-control" placeholder="Your Website (optional)">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col form-group">
-                                    <textarea name="comment" class="form-control"
-                                              placeholder="Your Comment*"></textarea>
+                                    <textarea name="comment" class="form-control" placeholder="Your Comment*" required></textarea>
                                 </div>
                             </div>
-
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary">Post Comment</button>
                             </div>
-
                         </form>
-
                     </div>
                 </section><!-- /Comment Form Section -->
-
             </div>
 
             <div class="col-lg-4 sidebar">
-
                 <div class="widgets-container">
-
                     <!-- Blog Author Widget -->
                     <div class="blog-author-widget widget-item">
-
                         <div class="d-flex flex-column align-items-center">
                             <div class="d-flex align-items-center w-100">
-                                <img src="assets/img/blog/blog-author.jpg" class="rounded-circle flex-shrink-0" alt="">
-                                <div>
+                                <img src="assets/img/blog/blog-author.jpg" class="rounded-circle flex-shrink-0" alt="Author">
+                                <div class="ms-3">
                                     <h4>Jane Smith</h4>
                                     <div class="social-links">
-                                        <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
+                                        <a href="https://x.com/#"><i class="bi bi-twitter"></i></a>
                                         <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
-                                        <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
-                                        <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a>
+                                        <a href="https://instagram.com/#"><i class="bi bi-instagram"></i></a>
+                                        <a href="https://linkedin.com/#"><i class="bi bi-linkedin"></i></a>
                                     </div>
                                 </div>
                             </div>
-
                             <p>
                                 Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium.
                                 Quas repellat voluptatem officia numquam sint aspernatur voluptas. Esse et accusantium
                                 ut unde voluptas.
                             </p>
-
                         </div>
-
                     </div><!--/Blog Author Widget -->
 
                     <!-- Search Widget -->
                     <div class="search-widget widget-item">
-
                         <h3 class="widget-title">Search</h3>
-                        <form action="">
-                            <input type="text">
+                        <form action="#" method="get">
+                            <input type="text" name="q" placeholder="Search...">
                             <button type="submit" title="Search"><i class="bi bi-search"></i></button>
                         </form>
-
                     </div><!--/Search Widget -->
 
                     <!-- Similar Posts Widget -->
                     <div class="recent-posts-widget widget-item">
-
                         <h3 class="widget-title">Similar Posts</h3>
                         {% for post in similar_post %}
-                        <div class="post-item">
-                            <img src="{{ post.images.first.image_field.url}}" alt="" class="img-fluid w-20 rounded">
+                        <div class="post-item d-flex mb-3">
+                            {% if post.images.first %}
+                            <img src="{{ post.images.first.image_field.url }}" alt="" class="img-fluid rounded me-3" style="width: 70px; height: 50px; object-fit: cover;">
+                            {% endif %}
                             <div>
-                                <h4><a href="{{ post.get_absolute_url }}">{{post.title}}</a></h4>
-                                <time >{{post.create}}</time>
+                                <h4><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h4>
+                                <time>{{ post.create|date:"F j, Y" }}</time>
                             </div>
                         </div><!-- End recent post item-->
                         {% empty %}
-                        <p>no similar post</p>
+                        <p>No similar post</p>
                         {% endfor %}
-
-
                     </div><!--/Similar Posts Widget -->
 
                     <!-- Tags Widget -->
                     <div class="tags-widget widget-item">
-
                         <h3 class="widget-title">Tags</h3>
-                        <ul>
+                        <ul class="list-unstyled d-flex flex-wrap gap-2">
                             {% for tag in tags %}
-                            <li><a href="{% url 'blog:post_list_by_tag' tag.slug %}">{{tag.name}}</a></li>
-                            {% if not forloop.last %},{% endif %}
+                            <li><a href="{% url 'blog:post_list_by_tag' tag.slug %}" class="badge bg-secondary text-decoration-none">{{ tag.name }}</a></li>
                             {% endfor %}
-
                         </ul>
-
                     </div><!--/Tags Widget -->
-
                 </div>
-
             </div>
-
         </div>
     </div>
-
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.like-button').click(function() {
+        var post_id = $(this).closest('.meta-top').data('post_id');
+        var button = $(this);
+        var csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'blog:post_like' %}",
+            data: {
+                'post_id': post_id,
+                'csrfmiddlewaretoken': csrfToken
+            },
+            success: function(data) {
+                if (data.liked) {
+                    button.addClass('liked').find('.like-text').text('Unlike');
+                    button.find('.heart-icon').css({'fill': '#e74c3c', 'stroke': '#e74c3c'});
+                } else {
+                    button.removeClass('liked').find('.like-text').text('Like');
+                    button.find('.heart-icon').css({'fill': 'none', 'stroke': '#444'});
+                }
+                button.find('.likes-count').text(data.liked_count);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+</script>
 
 {% endblock %}
