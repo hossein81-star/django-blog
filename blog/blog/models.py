@@ -57,6 +57,7 @@ class Post(models.Model):
     status=models.CharField(choices=Status,default="DF",max_length=2)
     author=models.ForeignKey( settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="posts")
     likes=models.ManyToManyField(User,related_name="liked_post",blank=True)
+    saved_by = models.ManyToManyField(User, related_name="saved_post", blank=True)
     # create=models.DateTimeField(auto_now_add=True)
     # update=models.DateTimeField(auto_now=True)
     # publish=models.DateTimeField(timezone.now)

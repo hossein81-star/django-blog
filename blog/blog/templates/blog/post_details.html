@@ -4,8 +4,8 @@
 
 {% block content %}
 <style>
-/* دکمه لایک */
-.btn-like {
+/* دکمه لایک و ذخیره */
+.btn-like, .btn-save {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -22,6 +22,11 @@
     color: #e74c3c;
 }
 
+.btn-save:hover {
+    color: #3498db;
+}
+
+/* آیکون قلب */
 .heart-icon {
     stroke: #444;
     transition: stroke 0.3s ease, fill 0.3s ease;
@@ -33,7 +38,19 @@
     animation: heartbeat 0.6s ease;
 }
 
-.likes-count {
+/* آیکون ذخیره */
+.save-icon {
+    stroke: #444;
+    transition: stroke 0.3s ease, fill 0.3s ease;
+}
+
+.btn-save.saved .save-icon {
+    fill: #3498db;
+    stroke: #3498db;
+    animation: savepop 0.6s ease;
+}
+
+.likes-count, .saves-count {
     font-size: 1rem;
     min-width: 24px;
     text-align: center;
@@ -46,6 +63,15 @@
     25% { transform: scale(1.3); }
     40% { transform: scale(1); }
     60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* انیمیشن پاپ ذخیره */
+@keyframes savepop {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.15); }
     100% { transform: scale(1); }
 }
 </style>
@@ -90,13 +116,24 @@
                                     </li>
                                 </ul>
 
-                                <!-- Like Button -->
-                                <button class="btn-like like-button {% if user in post.likes.all %}liked{% endif %}" aria-label="Like Post" title="Like this post">
-                                    <svg class="heart-icon" viewBox="0 0 24 24" width="24" height="24" fill="{% if user in post.likes.all %}#e74c3c{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 21C12 21 5 14.75 5 9.5C5 7.01472 7.01472 5 9.5 5C10.948 5 12 6 12 6C12 6 13.052 5 14.5 5C16.9853 5 19 7.01472 19 9.5C19 14.75 12 21 12 21Z"/>
-                                    </svg>
-                                    <span class="likes-count">{{ post.likes.count }}</span>
-                                </button>
+                                <!-- like button -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Like Button -->
+                                    <button class="btn-like like-button {% if user in post.likes.all %}liked{% endif %}" aria-label="Like Post" title="Like this post">
+                                        <svg class="heart-icon" viewBox="0 0 24 24" width="24" height="24" fill="{% if user in post.likes.all %}#e74c3c{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 21C12 21 5 14.75 5 9.5C5 7.01472 7.01472 5 9.5 5C10.948 5 12 6 12 6C12 6 13.052 5 14.5 5C16.9853 5 19 7.01472 19 9.5C19 14.75 12 21 12 21Z"/>
+                                        </svg>
+                                        <span class="likes-count">{{ post.likes.count }}</span>
+                                    </button>
+
+                                    <!-- Save Button -->
+                                    <button class="btn-save save-button {% if user in post.saved_by.all %}saved{% endif %}" aria-label="Save Post" title="Save this post">
+                                        <svg class="save-icon" viewBox="0 0 24 24" width="24" height="24" fill="{% if user in post.saved_by.all %}#3498db{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                                        </svg>
+
+                                    </button>
+                                </div>
                             </div><!-- End meta top -->
 
                             <div class="content">
@@ -233,6 +270,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // like post
     $('.like-button').click(function() {
         var post_id = $(this).closest('.meta-top').data('post_id');
         var button = $(this);
@@ -247,16 +285,39 @@ $(document).ready(function() {
             },
             success: function(data) {
                 if (data.liked) {
-                    button.addClass('liked').find('.like-text').text('Unlike');
+                    button.addClass('liked');
                     button.find('.heart-icon').css({'fill': '#e74c3c', 'stroke': '#e74c3c'});
                 } else {
-                    button.removeClass('liked').find('.like-text').text('Like');
+                    button.removeClass('liked');
                     button.find('.heart-icon').css({'fill': 'none', 'stroke': '#444'});
                 }
                 button.find('.likes-count').text(data.liked_count);
+            }
+        });
+    });
+
+    // save post
+    $('.save-button').click(function() {
+        var post_id = $(this).closest('.meta-top').data('post_id');
+        var button = $(this);
+        var csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'blog:post_save' %}",
+            data: {
+                'post_id': post_id,
+                'csrfmiddlewaretoken': csrfToken
             },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
+            success: function(data) {
+                if (data.saved) {
+                    button.addClass('saved');
+                    button.find('.save-icon').css({'fill': '#3498db', 'stroke': '#3498db'});
+                } else {
+                    button.removeClass('saved');
+                    button.find('.save-icon').css({'fill': 'none', 'stroke': '#444'});
+                }
+
             }
         });
     });

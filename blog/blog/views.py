@@ -186,3 +186,27 @@ def post_like(request):
     else:
         response_data={"error":"post not found"}
     return JsonResponse(response_data)
+
+@login_required
+@require_POST
+def post_save(request):
+    post_id=request.POST.get("post_id")
+    if post_id is not None:
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+        saved = None
+        if user in post.saved_by.all():
+            saved=False
+            post.saved_by.remove(user)
+        else:
+            saved=True
+            post.saved_by.add(user)
+
+
+        response_data={
+            "saved":saved,
+
+        }
+    else:
+        response_data={"error":"post not found"}
+    return JsonResponse(response_data)
