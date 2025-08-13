@@ -40,6 +40,7 @@ def index(request):
 
 
 def post_list(request,category_slug=None,tag_slug=None):
+
     user=request.user
     posts=Post.published.all()
     category=None
@@ -59,6 +60,10 @@ def post_list(request,category_slug=None,tag_slug=None):
         "user":user
         }
     return render(request, "blog/post_list.html", context)
+
+def user_list(request):
+    users=User.objects.all()
+    return render(request,"blog/user_list.html",{"users":users})
 
 
 def post_details(request,pk):
@@ -210,3 +215,7 @@ def post_save(request):
     else:
         response_data={"error":"post not found"}
     return JsonResponse(response_data)
+
+def user_details(request,username):
+    user = get_object_or_404(User,username=username)
+    return render(request,"blog/users_profile.html",{"user":user})

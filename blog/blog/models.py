@@ -16,6 +16,10 @@ class User(AbstractUser):
     photo = models.ImageField(verbose_name="image", upload_to="account_images/", blank=True, null=True)
     job = models.CharField(max_length=250, verbose_name="job", null=True, blank=True)
     phone = models.CharField(max_length=11, null=True, blank=True)
+    following=models.ManyToManyField("self",related_name="followed",through="UserContact",symmetrical=False)
+    # check field name
+    def get_absolute_url(self):
+        return reverse("blog:user_details", args=[self.username])
 
 
 class UserImage(models.Model):
@@ -103,4 +107,14 @@ class PostImage(models.Model):
     objects = models.Manager()
 
 
-
+class UserContact(models.Model):
+    user_from=models.ForeignKey(User,related_name="rel_from_set",on_delete=models.CASCADE)
+    user_to = models.ForeignKey(User, related_name="rel_to_set", on_delete=models.CASCADE)
+    create=models.DateField(auto_now_add=True)
+    class meta:
+        index=[
+            models.Index(fields=["-create"])
+        ]
+        ordering=("-create")
+    def __str__(self):
+        return f"{self.user_from} follow {self.user_to}"

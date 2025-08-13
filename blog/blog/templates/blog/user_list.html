@@ -1,0 +1,108 @@
+{% extends 'parent/base.html' %}
+
+{% block title %}Users List{% endblock %}
+
+{% block content %}
+<style>
+    .user-card {
+      background-color: #fff;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .user-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .user-pic {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0d6efd;
+      box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
+      margin-bottom: 0.8rem;
+    }
+
+    .user-name {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .user-bio {
+      font-size: 0.9rem;
+      color: #6c757d;
+      min-height: 40px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.8rem 0;
+    }
+
+    .stats-item h6 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .stats-item p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+
+    @media (max-width: 576px) {
+      .stats {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+</style>
+
+<div class="container my-5">
+    <h2 class="fw-bold mb-4 text-center">Users</h2>
+    <div class="row g-4">
+        {% for u in users %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="user-card">
+                <a href="{{ u.get_absolute_url }}">
+                    <img src="{{ u.image.first.image_field.url }}" alt="{{ u.username }}" class="user-pic">
+                    <div class="user-name">{{ u.username }}</div>
+                </a>
+
+                <p class="user-bio">{{ u.bio|default:"No biography provided." }}</p>
+
+                <div class="stats">
+                    <div class="stats-item">
+                        <h6>{{ u.followers_count }}</h6>
+                        <p>Followers</p>
+                    </div>
+                    <div class="stats-item">
+                        <h6>{{ u.following_count }}</h6>
+                        <p>Following</p>
+                    </div>
+                </div>
+
+                {% if u.is_following %}
+                <button class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-person-dash"></i> Unfollow
+                </button>
+                {% else %}
+                <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-person-plus"></i> Follow
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
