@@ -62,7 +62,7 @@ def post_list(request,category_slug=None,tag_slug=None):
     return render(request, "blog/post_list.html", context)
 
 def user_list(request):
-    users=User.objects.all()
+    users=User.objects.all().exclude(id=request.user.id)
     return render(request,"blog/user_list.html",{"users":users})
 
 
@@ -219,3 +219,25 @@ def post_save(request):
 def user_details(request,username):
     user = get_object_or_404(User,username=username)
     return render(request,"blog/users_profile.html",{"user":user})
+
+@login_required
+@require_POST
+def user_follow(request):
+    user_id=request.POST.get("user_id")
+    if user_id:
+        try:
+            user= get_object_or_404(User,id=user_id)
+            if request.user in user.followed.all():
+
+                follow=False
+                UserContact.objects.filter(user_from=request.user, user_to=user).delete()
+            else:
+                follow=True
+                UserContact.objects.get_or_create(user_from=request.user, user_to=user)
+            follower_count=user.followed.count()
+            following_count = user.following.count()
+            return JsonResponse({"follow":follow,"follower_count":follower_count,"following_count":following_count})
+        except:
+            return JsonResponse({"errors":"user dose not exist"})
+    return JsonResponse({"errors":"invalid request"})
+

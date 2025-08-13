@@ -38,6 +38,8 @@ urlpatterns=[
     path("password-reset/complete/", auth_views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path("post-like/", views.post_like, name="post_like"),
     path("post-save/", views.post_save, name="post_save"),
+    path("user-follow/", views.user_follow, name="user_follow"),
+
 
 
 ]
