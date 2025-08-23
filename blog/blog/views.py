@@ -42,16 +42,17 @@ def index(request):
 def post_list(request,category_slug=None,tag_slug=None):
 
     user=request.user
-    posts=Post.published.all()
+    posts = Post.objects.all().select_related('author').prefetch_related('author__image').order_by("-total_like_count")
+
     category=None
     tag=None
     if category_slug:
         category=category_slug
-        posts=Post.published.filter(category=category_slug)
+        posts=Post.published.filter(category=category_slug).select_related('author').prefetch_related('author__image').order_by("-total_like_count")
 
     elif tag_slug:
         tag=get_object_or_404(Tag,slug=tag_slug)
-        posts=Post.published.filter(tags__in=[tag])
+        posts=Post.published.filter(tags__in=[tag]).select_related('author').prefetch_related('author__image').order_by("-total_like_count")
 
     context = {
         "posts": posts,
@@ -93,17 +94,35 @@ def sign_up(request):
         form=RegisterForm()
     return render(request,"forms/sign_up.html",{"form":form})
 
-
+@login_required
 def profile(request):
     user=request.user
-    posts=request.user.posts.all()
-    return render(request, "blog/profile.html", {"user":user,"posts":posts})
+    posts=user.posts.all()
+    followers=user.followed.all()
+    following = user.following.all()
+    recent_following_users = UserContact.objects.filter(
+        user_from=request.user
+    ).select_related('user_to').order_by('-create')[:2]
+    recent_users = [fc.user_to for fc in recent_following_users]
+    saved_post=user.saved_post.all()
 
+    likes=user.liked_post.all()
+    context={
+        "user": user,
+        "posts": posts,
+        "followers":followers,
+        "following":following,
+        "likes":likes,
+        "recent_following":recent_users,
+        "saved_post":saved_post
+    }
+    return render(request, "blog/profile.html", context)
 
+@login_required
 def user_logout(request):
     logout(request)
     return redirect("blog:index")
-
+@login_required
 def add_post(request):
     category = Post.CATEGORY_CHOICES
     if request.method=='POST':
@@ -123,7 +142,7 @@ def add_post(request):
         form = AddPost()
     return render(request,"forms/add_post.html",{"form":form,"category":category})
 
-
+@login_required
 def delete_post(request, pk):
     post=get_object_or_404(Post, id=pk)
     if request.method=="POST":
@@ -132,7 +151,7 @@ def delete_post(request, pk):
 
     return render(request,"forms/del_post.html",{"post":post})
 
-
+@login_required
 def update_post(request, pk):
     post=get_object_or_404(Post, id=pk)
     post_tag=tags_text = ", ".join(tag.name for tag in post.tags.all())
@@ -161,7 +180,7 @@ def update_post(request, pk):
     }
 
     return render(request, "forms/add_post.html", context)
-
+@login_required
 def delete_image(request, pk):
     image = get_object_or_404(PostImage, id=pk)
     image.delete()

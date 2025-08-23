@@ -2,7 +2,13 @@
 <!-- main_content.html -->
 {% extends 'parent/base.html' %}
 
-{% block title %}{{category}}{% endblock %}
+{% block title %}
+{% if tag %}
+  {{tag}}
+{% else %}
+  {{category}}
+{% endif %}
+{% endblock %}
 
 {% block content %}
 

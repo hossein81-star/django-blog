@@ -73,6 +73,7 @@
         <!-- Bio -->
         <p class="text-muted mb-3">{{ user.bio|default:"No biography provided." }}</p>
 
+        {% if user != request.user %}
         <div class="stats">
             <div class="stats-item">
                 <h6 class="follower_count">{{ user.followed.count }}</h6>
@@ -86,16 +87,17 @@
 
 
         {% if request.user in user.followed.all %}
-        <button  class="btn btn-outline-danger btn-sm follow-button"
+        <button class="btn btn-outline-danger btn-sm follow-button"
                 data-user_id="{{ user.id }}">
             <i class="bi bi-person-dash"></i> Unfollow
         </button>
         {% else %}
-        <button  class="btn btn-primary btn-sm follow-button"
+        <button class="btn btn-primary btn-sm follow-button"
                 data-user_id="{{ user.id }}">
             <i class="bi bi-person-plus"></i> Follow
         </button>
 
+        {% endif %}
         {% endif %}
     </div>
 
@@ -114,7 +116,7 @@
     {% else %}
     <div class="alert alert-info text-center">No posts yet.</div>
     {% endif %}
-     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

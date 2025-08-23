@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    "debug_toolbar",
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -144,3 +146,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

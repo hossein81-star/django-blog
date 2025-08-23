@@ -49,9 +49,22 @@
     box-shadow: none;
     border-color: #0d6efd;
   }
+
+  /* Animation for activity and followers sections */
+  .collapse-transition {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+  .collapse-transition.show {
+    max-height: 1000px; /* به اندازه کافی بزرگ برای محتوا */
+    opacity: 1;
+  }
 </style>
 
 <div class="container my-5">
+  <!-- Profile Info -->
   <div class="profile-container text-center mb-5">
     <img src="{{ user.image.first.image_field.url }}" alt="User" class="profile-pic mb-3 h-20 w-20">
     <h3 class="fw-bold mb-1">{{ user.username }}</h3>
@@ -59,6 +72,7 @@
     <p class="text-muted mb-0">Date of birth: {{ user.date_of_birth|default:"N/A" }}</p>
   </div>
 
+  <!-- Tabs -->
   <ul class="nav nav-tabs justify-content-center mb-4" id="profile-tabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">📝 Posts</button>
@@ -78,7 +92,7 @@
       {% if posts %}
         {% for post in posts %}
           <div class="post-card">
-            <h5 class="fw-bold mb-2">{{ post.title }}</h5>
+            <a href="{{ post.get_absolute_url }}" class="fw-bold mb-2">{{ post.title }}</a>
             <p class="text-muted">{{ post.meta_description|truncatechars:150 }}</p>
             <div class="text-end">
               <a href="{% url 'blog:delete_post' post.pk %}" class="btn btn-sm btn-outline-danger">
@@ -135,7 +149,135 @@
     </div>
 
   </div>
+
+  <!-- Activity Section -->
+  <div class="text-center my-4">
+    <button class="btn btn-outline-primary" id="toggleActivityBtn">📊 View Activities</button>
+  </div>
+
+  <div class="activity-box card card-body collapse-transition" id="activityBox">
+    <ul class="nav nav-pills justify-content-center mb-3" id="activity-tabs">
+      <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#liked-posts">❤️ Liked Posts</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#followed-users">👥 Recent Followed Users</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#saved-posts">💾 Saved Posts</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="liked-posts">
+        {% if likes %}
+          <ul class="list-group">
+            {% for post in likes %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ post.title }}
+                <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="alert alert-info text-center">No liked posts yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="tab-pane fade" id="followed-users">
+        {% if recent_following %}
+          <ul class="list-group">
+            {% for u in recent_following %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ u.username }}
+                <a href="{{ u.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">View Profile</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="alert alert-info text-center">No followed users yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="tab-pane fade" id="saved-posts">
+        {% if saved_post %}
+          <ul class="list-group">
+            {% for post in saved_post %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ post.title }}
+                <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-outline-success">View</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="alert alert-info text-center">No saved posts yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Followers / Following Section -->
+  <div class="d-flex justify-content-center gap-4 my-4">
+    <button class="btn btn-outline-dark" id="toggleFollowersBtn">👥 Followers <span class="badge bg-dark">{{ followers.count }}</span></button>
+    <button class="btn btn-outline-dark" id="toggleFollowingBtn">🔗 Following <span class="badge bg-dark">{{ following.count }}</span></button>
+  </div>
+
+  <div class="collapse-transition" id="followersBox">
+    <div class="card card-body">
+      {% if followers %}
+        <ul class="list-group">
+          {% for f in followers %}
+            <li class="list-group-item">{{ f.username }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="alert alert-info text-center">No followers yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="collapse-transition" id="followingBox">
+    <div class="card card-body">
+      {% if following %}
+        <ul class="list-group">
+          {% for f in following %}
+            <li class="list-group-item">{{ f.username }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="alert alert-info text-center">Not following anyone yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Activity Box Toggle
+  const activityBtn = document.getElementById('toggleActivityBtn');
+  const activityBox = document.getElementById('activityBox');
+  activityBtn.addEventListener('click', () => { activityBox.classList.toggle('show'); });
+
+  // Followers / Following Toggle
+  const followersBtn = document.getElementById('toggleFollowersBtn');
+  const followersBox = document.getElementById('followersBox');
+  followersBtn.addEventListener('click', () => { followersBox.classList.toggle('show'); });
+
+  const followingBtn = document.getElementById('toggleFollowingBtn');
+  const followingBox = document.getElementById('followingBox');
+  followingBtn.addEventListener('click', () => { followingBox.classList.toggle('show'); });
+
+  // Smooth Tab Switching for Activity
+  const tabs = document.querySelectorAll('#activity-tabs .nav-link');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      tabs.forEach(t => t.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    });
+  });
+</script>
 {% endblock %}

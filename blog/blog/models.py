@@ -68,6 +68,7 @@ class Post(models.Model):
     publish = models.DateTimeField(default=timezone.now)
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
+    total_like_count=models.PositiveIntegerField(default=0)
     tags = TaggableManager()
     #model manager
     objects = models.Manager()
@@ -93,7 +94,8 @@ class Post(models.Model):
     class Meta:
         ordering = ["-publish"]
         indexes = [
-            models.Index(fields=["-publish"])
+            models.Index(fields=["-publish"]),
+            models.Index(fields=["-total_like_count"])
         ]
     def __str__(self):
         return self.title
@@ -111,10 +113,10 @@ class UserContact(models.Model):
     user_from=models.ForeignKey(User,related_name="rel_from_set",on_delete=models.CASCADE)
     user_to = models.ForeignKey(User, related_name="rel_to_set", on_delete=models.CASCADE)
     create=models.DateField(auto_now_add=True)
-    class meta:
-        index=[
+    class Meta:
+        indexes=[
             models.Index(fields=["-create"])
         ]
-        ordering=("-create")
+        ordering=["-create"]
     def __str__(self):
         return f"{self.user_from} follow {self.user_to}"
