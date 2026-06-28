@@ -449,13 +449,10 @@ Backend Developer | Python & Django
 
 GitHub:
 ```
-https://github.com/yourusername
+https://github.com/hossein81-star
 ```
 
-LinkedIn:
-```
-https://linkedin.com/in/yourprofile
-```
+
 
 ---
 
